@@ -14,7 +14,8 @@ def home():
 
 @app.route('/data')
 def data():
-    return jsonify([user for user in users.keys()])
+    # Ensure that the response is an empty list if no users are present
+    return jsonify([user for user in users.keys()]) if users else jsonify([])
 
 @app.route('/status')
 def status():
@@ -36,6 +37,10 @@ def add_user():
     username = data.get('username')
     if not username:
         return jsonify({"error": "Username is required"}), 400
+
+    # Check if the username already exists
+    if username in users:
+        return jsonify({"error": "Username already exists"}), 400
 
     # Add the user to the in-memory dictionary
     users[username] = {
